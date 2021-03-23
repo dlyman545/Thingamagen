@@ -14,5 +14,5 @@ var adj1 = [
 
 function genathingFN() {
 	var randNum = Math.floor(Math.random() * (adj1.length));
-	document.getElementById('posDisplay').innerHTML = adj1[randNum];
+	document.getElementById('genDisplay').innerHTML = adj1[randNum];
 }
