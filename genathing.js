@@ -12,7 +12,7 @@ var adj1 = [
 	'The average dog is a nicer person than the average person.',
 ]
 
-function genathingFN() {
+function genathingFn() {
 	var randNum = Math.floor(Math.random() * (adj1.length));
 	document.getElementById('genDisplay').innerHTML = adj1[randNum];
 }
