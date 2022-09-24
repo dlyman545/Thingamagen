@@ -26,6 +26,7 @@
 			function init() {
 
 				canvas = document.createElement( 'canvas' );
+				canvas.id = 'my-canvas';
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;
 				canvas.style.cursor = 'crosshair';
@@ -43,7 +44,7 @@
 
 			function onDocumentMouseDown( event ) {
 				
-				offsetCanvas = canvas.offset();
+				offsetCanvas = $('my-canvas').offset();
 
 				mouse.x = event.clientX;
 				mouse.y = event.clientY;
