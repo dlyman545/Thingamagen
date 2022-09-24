@@ -42,6 +42,8 @@
 			}
 
 			function onDocumentMouseDown( event ) {
+				
+				offsetCanvas = canvas.offset();
 
 				mouse.x = event.clientX;
 				mouse.y = event.clientY;
@@ -57,7 +59,7 @@
 			}
 
 			function onDocumentMouseMove( event ) {
-				offsetCanvas = canvas.offset();
+				
         			//var x = event.pageX - offsetCanvas.left;
         			//var y = event.pageY - offsetCanvas.top;
 				
