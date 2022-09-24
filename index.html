@@ -44,8 +44,6 @@
 
 			function onDocumentMouseDown( event ) {
 				
-				var offsetCanvas = $('#my-canvas').offset();
-
 				mouse.x = event.clientX;
 				mouse.y = event.clientY;
 
@@ -61,8 +59,7 @@
 
 			function onDocumentMouseMove( event ) {
 				
-        			//var x = event.pageX - offsetCanvas.left;
-        			//var y = event.pageY - offsetCanvas.top;
+        			offsetCanvas = $('#my-canvas').offset();
 				
 				context.beginPath();
 				
