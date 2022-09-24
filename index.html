@@ -42,8 +42,11 @@
 
 			function onDocumentMouseDown( event ) {
 
-				mouse.x = event.clientX;
-				mouse.y = event.clientY;
+				//mouse.x = event.clientX;
+				//mouse.y = event.clientY;
+				
+				mouse.x = event.pageX;
+				mouse.y = event.pageY;
 
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
