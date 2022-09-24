@@ -42,11 +42,8 @@
 
 			function onDocumentMouseDown( event ) {
 
-				//mouse.x = event.clientX;
-				//mouse.y = event.clientY;
-				
-				mouse.x = event.pageX;
-				mouse.y = event.pageY;
+				mouse.x = event.clientX;
+				mouse.y = event.clientY;
 
 				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
@@ -59,10 +56,13 @@
 			}
 
 			function onDocumentMouseMove( event ) {
-
+				var offsetCanvas = canvas.offset();
+        			//var x = event.pageX - offsetCanvas.left;
+        			//var y = event.pageY - offsetCanvas.top;
+				
 				context.beginPath();
-				context.moveTo( mouse.x, mouse.y );
-				context.lineTo( event.clientX, event.clientY );
+				context.moveTo( (mouse.x + offsetCanvas.left), (mouse.y + offsetCanvas.top));
+				context.lineTo( (event.clientX + offsetCanvas.left), (event.clientY + offsetCanvas.top) );
 				context.stroke();
 
 				mouse.x = event.clientX;
