@@ -14,68 +14,58 @@
 	</div>
 	<br>
 	<button class="button" onclick = "genathingFn()">Generate my thing!</button>
+	
 	<!-- canvas -->
-	<script>
+  	<canvas id="drawing" width="400" height="400"></canvas>
 
-			//var canvas, context, mouse;
-			var canvas, context, mouse = { x: 0, y: 0 };
-			var offsetCanvas;
+	  <br>
+	  <label for="color">Choose a color:</label>
+	  <input type="color" id="color" value="#000000">
 
-			init();
+	  	<script>
+			    // get the canvas element and its context
+			    var canvas = document.getElementById("drawing");
+			    var ctx = canvas.getContext("2d");
 
-			function init() {
+			    // set the initial pen color
+			    ctx.strokeStyle = document.getElementById("color").value;
 
-				canvas = document.createElement( 'canvas' );
-				canvas.id = 'my-canvas';
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
-				canvas.style.cursor = 'crosshair';
+			    // initialize the last position of the mouse
+			    var lastX;
+			    var lastY;
+			    var isDrawing = false;
 
-				context = canvas.getContext( '2d' );
-				context.strokeStyle = 'rgb(0,0,0)';
-				context.lineWidth = 0.5;
+			    // handle mousedown events
+			    canvas.addEventListener("mousedown", function(e) {
+			      lastX = e.offsetX;
+			      lastY = e.offsetY;
+			      isDrawing = true;
+			    });
 
-				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+			    // handle mousemove events
+			    canvas.addEventListener("mousemove", function(e) {
+			      if (isDrawing) {
+				// draw a line from the last position to the current position
+				ctx.beginPath();
+				ctx.moveTo(lastX, lastY);
+				ctx.lineTo(e.offsetX, e.offsetY);
+				ctx.stroke();
+				// update the last position of the mouse
+				lastX = e.offsetX;
+				lastY = e.offsetY;
+			      }
+			    });
 
-				document.body.appendChild( canvas );
+			    // handle mouseup events
+			    canvas.addEventListener("mouseup", function(e) {
+			      isDrawing = false;
+			    });
 
-			}
-
-			function onDocumentMouseDown( event ) {
-				
-				mouse.x = event.clientX;
-				mouse.y = event.clientY;
-
-				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
-			}
-
-			function onDocumentMouseUp( event ) {
-
-				document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-
-			}
-
-			function onDocumentMouseMove( event ) {
-				
-        			//offsetCanvas = $('#my-canvas').offset();
-				
-				context.beginPath();
-				
-				//context.moveTo( (mouse.x + offsetCanvas.left), (mouse.y + offsetCanvas.top) );
-				//context.lineTo( (event.clientX + offsetCanvas.left), (event.clientY + offsetCanvas.top) );
-				
-				context.moveTo( (mouse.x), (mouse.y - 150) );
-				context.lineTo( (event.clientX), (event.clientY - 150) );
-				
-				context.stroke();
-
-				mouse.x = event.clientX;
-				mouse.y = event.clientY;
-
-			}
-
-		</script>
+			    // handle color picker change events
+			    document.getElementById("color").addEventListener("change", function(e) {
+			      ctx.strokeStyle = e.target.value;
+			    });
+	  	</script>
 	</body>
 </html>
+
