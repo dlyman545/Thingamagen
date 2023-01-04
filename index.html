@@ -14,57 +14,55 @@
 	</div>
 	<br>
 	<button class="button" onclick = "genathingFn()">Generate my thing!</button>
+	<label for="color">Choose a color:</label>
+	<input type="color" id="color" value="#000000">
 	
 	<!-- canvas -->
-  	<canvas id="drawing" width="400" height="400"></canvas>
+  	<canvas id="drawing" width="100%" height="100%"></canvas>
+	<br>
+		<script>
+			// get the canvas element and its context
+			var canvas = document.getElementById("drawing");
+			var ctx = canvas.getContext("2d");
 
-	  <br>
-	  <label for="color">Choose a color:</label>
-	  <input type="color" id="color" value="#000000">
+			// set the initial pen color
+			ctx.strokeStyle = document.getElementById("color").value;
 
-	  	<script>
-			    // get the canvas element and its context
-			    var canvas = document.getElementById("drawing");
-			    var ctx = canvas.getContext("2d");
+			// initialize the last position of the mouse
+			var lastX;
+			var lastY;
+			var isDrawing = false;
 
-			    // set the initial pen color
-			    ctx.strokeStyle = document.getElementById("color").value;
-
-			    // initialize the last position of the mouse
-			    var lastX;
-			    var lastY;
-			    var isDrawing = false;
-
-			    // handle mousedown events
-			    canvas.addEventListener("mousedown", function(e) {
-			      lastX = e.offsetX;
-			      lastY = e.offsetY;
-			      isDrawing = true;
-			    });
-
-			    // handle mousemove events
-			    canvas.addEventListener("mousemove", function(e) {
-			      if (isDrawing) {
-				// draw a line from the last position to the current position
-				ctx.beginPath();
-				ctx.moveTo(lastX, lastY);
-				ctx.lineTo(e.offsetX, e.offsetY);
-				ctx.stroke();
-				// update the last position of the mouse
+			// handle mousedown events
+			canvas.addEventListener("mousedown", function(e) {
 				lastX = e.offsetX;
 				lastY = e.offsetY;
-			      }
-			    });
+			      	isDrawing = true;
+			});
 
-			    // handle mouseup events
-			    canvas.addEventListener("mouseup", function(e) {
-			      isDrawing = false;
-			    });
+			// handle mousemove events
+			canvas.addEventListener("mousemove", function(e) {
+				if (isDrawing) {
+					// draw a line from the last position to the current position
+					ctx.beginPath();
+					ctx.moveTo(lastX, lastY);
+					ctx.lineTo(e.offsetX, e.offsetY);
+					ctx.stroke();
+					// update the last position of the mouse
+					lastX = e.offsetX;
+					lastY = e.offsetY;
+			      	}
+			});
 
-			    // handle color picker change events
-			    document.getElementById("color").addEventListener("change", function(e) {
-			      ctx.strokeStyle = e.target.value;
-			    });
+			// handle mouseup events
+			canvas.addEventListener("mouseup", function(e) {
+				isDrawing = false;
+			});
+
+			// handle color picker change events
+			document.getElementById("color").addEventListener("change", function(e) {
+				ctx.strokeStyle = e.target.value;
+			});
 	  	</script>
 	</body>
 </html>
