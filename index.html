@@ -12,70 +12,82 @@
 	<div id = "genDisplay" class="important">Your Thingamagen will appear here.
 		<!-- Thing gens here -->
 	</div>
-	<br>
+	<div>
 	<button class="button" onclick = "genathingFn()">Generate my thing!</button>
+	<label for="color">Choose a color:</label>
+	<input type="color" id="color" value="#000000">
+	</div>
+	
 	<!-- canvas -->
-	<script>
+  	<canvas id="drawing" width="1200" height="2000"></canvas>
 
-			//var canvas, context, mouse;
-			var canvas, context, mouse = { x: 0, y: 0 };
-			var offsetCanvas;
+	<br>
+		<script>
+			// get the canvas element and its context
+			var canvas = document.getElementById("drawing");
+			var ctx = canvas.getContext("2d");
 
-			init();
+			// set the initial pen color
+			ctx.strokeStyle = document.getElementById("color").value;
 
-			function init() {
+			// initialize the last position of the input
+			var lastX;
+			var lastY;
+			var isDrawing = false;
 
-				canvas = document.createElement( 'canvas' );
-				canvas.id = 'my-canvas';
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
-				canvas.style.cursor = 'crosshair';
+			// handle touchstart events
+			canvas.addEventListener("touchstart", function(e) {
+				lastX = e.touches[0].clientX - canvas.offsetLeft;
+				lastY = e.touches[0].clientY - canvas.offsetTop;
+				isDrawing = true;
+			});
 
-				context = canvas.getContext( '2d' );
-				context.strokeStyle = 'rgb(0,0,0)';
-				context.lineWidth = 0.5;
+			// handle touchmove events
+			canvas.addEventListener("touchmove", function(e) {
+				e.preventDefault(); // prevent scrolling
+			    	if (isDrawing) {
+			      	// draw a line from the last position to the current position
+			      		ctx.beginPath();
+			      		ctx.moveTo(lastX, lastY);
+			      		ctx.lineTo(e.touches[0].clientX - canvas.offsetLeft, e.touches[0].clientY - canvas.offsetTop);
+			      		ctx.stroke();
+			      		// update the last position of the touch
+			      		lastX = e.touches[0].clientX - canvas.offsetLeft;
+			      		lastY = e.touches[0].clientY - canvas.offsetTop;
+			    	}
+			});
 
-				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+			// handle touchend events
+			canvas.addEventListener("touchend", function(e) {
+			    	isDrawing = false;
+			});
 
-				document.body.appendChild( canvas );
+			// handle mousedown events
+			canvas.addEventListener("mousedown", function(e) {
+				lastX = e.offsetX;
+			    	lastY = e.offsetY;
+			    	isDrawing = true;
+			});
 
-			}
+			// handle mousemove events
+			canvas.addEventListener("mousemove", function(e) {
+				if (isDrawing) {
+			     		// draw a line from the last position to the current position
+			      		ctx.beginPath();
+			      		ctx.moveTo(lastX, lastY);
+			      		ctx.lineTo(e.offsetX, e.offsetY);
+			      		ctx.stroke();
+			      		// update the last position of the mouse
+			      		lastX = e.offsetX;
+			      		lastY = e.offsetY;
+			    	}
+			});
 
-			function onDocumentMouseDown( event ) {
-				
-				mouse.x = event.clientX;
-				mouse.y = event.clientY;
-
-				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
-			}
-
-			function onDocumentMouseUp( event ) {
-
-				document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-
-			}
-
-			function onDocumentMouseMove( event ) {
-				
-        			//offsetCanvas = $('#my-canvas').offset();
-				
-				context.beginPath();
-				
-				//context.moveTo( (mouse.x + offsetCanvas.left), (mouse.y + offsetCanvas.top) );
-				//context.lineTo( (event.clientX + offsetCanvas.left), (event.clientY + offsetCanvas.top) );
-				
-				context.moveTo( (mouse.x), (mouse.y - 150) );
-				context.lineTo( (event.clientX), (event.clientY - 150) );
-				
-				context.stroke();
-
-				mouse.x = event.clientX;
-				mouse.y = event.clientY;
-
-			}
-
-		</script>
+			// handle mouseup events
+			canvas.addEventListener("mouseup", function(e) {
+			    	isDrawing = false;
+			});
+	  	</script>
 	</body>
 </html>
+
