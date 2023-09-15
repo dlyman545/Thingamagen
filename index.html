@@ -27,8 +27,11 @@
 			var canvas = document.getElementById("drawing");
 			var ctx = canvas.getContext("2d");
 
-			// set the initial pen color
-			ctx.strokeStyle = document.getElementById("color").value;
+			// Get the color picker element
+    			var colorPicker = document.getElementById("color");
+
+    			// Set the initial pen color
+    			ctx.strokeStyle = colorPicker.value;
 
 			// initialize the last position of the input
 			var lastX;
@@ -87,6 +90,11 @@
 			canvas.addEventListener("mouseup", function(e) {
 			    	isDrawing = false;
 			});
+
+			// Handle color picker change events
+    			colorPicker.addEventListener("change", function(e) {
+      				ctx.strokeStyle = e.target.value;
+    			});
 	  	</script>
 	</body>
 </html>
