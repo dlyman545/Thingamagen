@@ -13,13 +13,15 @@
 		<!-- Thing gens here -->
 	</div>
 	<div>
-	<button class="button" onclick = "genathingFn()">Generate my thing!</button>
-	<label for="color">Choose a color:</label>
-	<input type="color" id="color" value="#000000">
+	<button class="button" width="50" height="20" onclick = "genathingFn()">Generate my thing!</button>
+	<label for="color"> Choose a color: </label>
+	<input type="color" width="50" height="300" id="color" value="#000000" onchange="dismissColorPicker()">
+	<label for="lineThickness">Line Thickness:</label>
+    	<input type="range" id="lineThickness" min="1" max="20" value="5">
 	</div>
 	
 	<!-- canvas -->
-  	<canvas id="drawing" width="1200" height="2000"></canvas>
+  	<canvas id="drawing" width="1200" height="1200"></canvas>
 
 	<br>
 		<script>
@@ -27,8 +29,12 @@
 			var canvas = document.getElementById("drawing");
 			var ctx = canvas.getContext("2d");
 
-			// set the initial pen color
-			ctx.strokeStyle = document.getElementById("color").value;
+			// Get the color picker element
+    			var colorPicker = document.getElementById("color");
+			var lineThicknessSlider = document.getElementById("lineThickness");
+
+    			// Set the initial pen color
+    			ctx.strokeStyle = colorPicker.value;
 
 			// initialize the last position of the input
 			var lastX;
@@ -87,6 +93,22 @@
 			canvas.addEventListener("mouseup", function(e) {
 			    	isDrawing = false;
 			});
+
+			// Handle color picker change events
+    			colorPicker.addEventListener("change", function(e) {
+      				ctx.strokeStyle = e.target.value;
+    			});
+
+			// Handle line thickness slider change events
+    			lineThicknessSlider.addEventListener("input", function(e) {
+      				ctx.lineWidth = e.target.value;
+    			});
+
+			// Handle color picker change events
+    			function dismissColorPicker() {
+      				ctx.strokeStyle = colorPicker.value;
+      				colorPicker.blur(); // Dismiss the color picker
+    			}
 	  	</script>
 	</body>
 </html>
