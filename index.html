@@ -115,11 +115,11 @@
     			function toggleTextVisibility() {
 				var genDisplay = document.getElementById("genDisplay");
 			      	var toggleButton = document.getElementById("toggleButton");
-			      	if (genDisplay.style.display === "none") {
-					genDisplay.style.display = "block";
+			      	if (genDisplay.style.visibility === "hidden") {
+    					genDisplay.style.visibility = "visible";
 			        	toggleButton.textContent = "Hide my thing!";
 			      	} else {
-			        	genDisplay.style.display = "none";
+    					genDisplay.style.visibility = "hidden";
 			        	toggleButton.textContent = "Show my thing!";
 			      	}
 			}
