@@ -97,6 +97,7 @@
 			// Handle color picker change events
     			colorPicker.addEventListener("change", function(e) {
       				ctx.strokeStyle = e.target.value;
+				colorPicker.blur();
     			});
 
 			// Handle line thickness slider change events
