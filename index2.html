@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thingamagen</title>
+  <script type="text/javascript" src="./genathing.js"></script>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+  <h1>Thingamagen</h1>
+  <div id="genDisplay" class="important">Your Thingamagen will appear here.
+    <!-- Thing gens here -->
+  </div>
+  <div>
+    <button class="button" width="50" height="20" onclick="genathingFn()">Generate my thing!</button>
+    <label for="color">Choose a color:</label>
+    <input type="color" id="color" value="#000000">
+    <br>
+    <label for="lineThickness">Line Thickness:</label>
+    <input type="range" id="lineThickness" min="1" max="20" value="1">
+  </div>
+
+  <!-- canvas -->
+  <canvas id="drawing" width="1200" height="1200"></canvas>
+
+  <br>
+  <script>
+    // get the canvas element and its context
+    var canvas = document.getElementById("drawing");
+    var ctx = canvas.getContext("2d");
+
+    // Get the color picker element and line thickness slider
+    var colorPicker = document.getElementById("color");
+    var lineThicknessSlider = document.getElementById("lineThickness");
+
+    // Set the initial pen color and line thickness
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = lineThicknessSlider.value;
+
+    // initialize the last position of the input
+    var lastX;
+    var lastY;
+    var isDrawing = false;
+
+    // handle touchstart events
+    canvas.addEventListener("touchstart", function(e) {
+      lastX = e.touches[0].clientX - canvas.offsetLeft;
+      lastY = e.touches[0].clientY - canvas.offsetTop;
+      isDrawing = true;
+    });
+
+    // handle touchmove events
+    canvas.addEventListener("touchmove", function(e) {
+      e.preventDefault(); // prevent scrolling
+      if (isDrawing) {
+        // draw a line from the last position to the current position
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.touches[0].clientX - canvas.offsetLeft, e.touches[0].clientY - canvas.offsetTop);
+        ctx.stroke();
+        // update the last position of the touch
+        lastX = e.touches[0].clientX - canvas.offsetLeft;
+        lastY = e.touches[0].clientY - canvas.offsetTop;
+      }
+    });
+
+    // handle touchend events
+    canvas.addEventListener("touchend", function(e) {
+      isDrawing = false;
+    });
+
+    // handle mousedown events
+    canvas.addEventListener("mousedown", function(e) {
+      lastX = e.offsetX;
+      lastY = e.offsetY;
+      isDrawing = true;
+    });
+
+    // handle mousemove events
+    canvas.addEventListener("mousemove", function(e) {
+      if (isDrawing) {
+        // draw a line from the last position to the current position
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        // update the last position of the mouse
+        lastX = e.offsetX;
+        lastY = e.offsetY;
+      }
+    });
+
+    // handle mouseup events
+    canvas.addEventListener("mouseup", function(e) {
+      isDrawing = false;
+    });
+
+    // Handle color picker change events
+    colorPicker.addEventListener("change", function(e) {
+      ctx.strokeStyle = e.target.value;
+    });
+
+    // Handle line thickness slider input events
+    lineThicknessSlider.addEventListener("input", function(e) {
+      ctx.lineWidth = e.target.value;
+    });
+  </script>
+</body>
+</html>
