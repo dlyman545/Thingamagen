@@ -14,6 +14,7 @@
 	</div>
 	<div>
 	<button class="button" width="50" height="20" onclick = "genathingFn()">Generate my thing!</button>
+	<button class="button" width="50" height="20" id="toggleButton" onclick="toggleTextVisibility()">Hide my thing!</button>
 	<label for="color"> Choose a color: </label>
 	<input type="color" width="50" height="300" id="color" value="#000000" onchange="dismissColorPicker()">
 	<label for="lineThickness">Line Thickness:</label>
@@ -110,6 +111,18 @@
       				ctx.strokeStyle = colorPicker.value;
       				colorPicker.blur(); // Dismiss the color picker
     			}
+			// Function to toggle text visibility
+    			function toggleTextVisibility() {
+				var genDisplay = document.getElementById("genDisplay");
+			      	var toggleButton = document.getElementById("toggleButton");
+			      	if (genDisplay.style.display === "none") {
+					genDisplay.style.display = "block";
+			        	toggleButton.textContent = "Hide my thing!";
+			      	} else {
+			        	genDisplay.style.display = "none";
+			        	toggleButton.textContent = "Show my thing!";
+			      	}
+			}
 	  	</script>
 	</body>
 </html>
