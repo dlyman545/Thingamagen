@@ -103,6 +103,12 @@
     			lineThicknessSlider.addEventListener("input", function(e) {
       				ctx.lineWidth = e.target.value;
     			});
+
+			// Handle color picker change events
+    			function dismissColorPicker() {
+      				ctx.strokeStyle = colorPicker.value;
+      				colorPicker.blur(); // Dismiss the color picker
+    			}
 	  	</script>
 	</body>
 </html>
