@@ -1,115 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Thingamagen</title>
-	<script type="text/javascript" src="./genathing.js"></script>
-	<link rel = "stylesheet" type = "text/css" href = "./style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thingamagen</title>
+  <script src="./genathing.js" defer></script>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 16px; }
+    .toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    #drawing { border: 1px solid #ddd; touch-action: none; /* needed for pointer events to block panning */ }
+    label { font-size: 14px; }
+    .value { min-width: 2ch; text-align: right; display: inline-block; }
+  </style>
 </head>
 
 <body>
-	
-	<h1>Thingamagen</h1>
-	<div id = "genDisplay" class="important">Your Thingamagen will appear here.
-		<!-- Thing gens here -->
-	</div>
-	<div>
-	<button class="button" width="50" height="20" onclick = "genathingFn()">Generate my thing!</button>
-	<label for="color"> Choose a color: </label>
-	<input type="color" width="50" height="300" id="color" value="#000000" onchange="dismissColorPicker()">
-	<label for="lineThickness">Line Thickness:</label>
-    	<input type="range" id="lineThickness" min="1" max="20" value="5">
-	</div>
-	
-	<!-- canvas -->
-  	<canvas id="drawing" width="1200" height="1200"></canvas>
+  <h1>Thingamagen</h1>
 
-	<br>
-		<script>
-			// get the canvas element and its context
-			var canvas = document.getElementById("drawing");
-			var ctx = canvas.getContext("2d");
+  <div id="genDisplay" class="important" style="margin-bottom: 8px;">
+    Your Thingamagen will appear here.
+  </div>
 
-			// Get the color picker element
-    			var colorPicker = document.getElementById("color");
-			var lineThicknessSlider = document.getElementById("lineThickness");
+  <div class="toolbar">
+    <button class="button" id="genBtn" onclick="genathingFn()">Generate my thing!</button>
 
-    			// Set the initial pen color
-    			ctx.strokeStyle = colorPicker.value;
+    <!-- Toggle text visibility -->
+    <button class="button" id="toggleButton" onclick="toggleTextVisibility()">Hide text</button>
 
-			// initialize the last position of the input
-			var lastX;
-			var lastY;
-			var isDrawing = false;
+    <!-- Color -->
+    <label for="color">Choose a color:</label>
+    <input type="color" id="color" value="#000000" />
 
-			// handle touchstart events
-			canvas.addEventListener("touchstart", function(e) {
-				lastX = e.touches[0].clientX - canvas.offsetLeft;
-				lastY = e.touches[0].clientY - canvas.offsetTop;
-				isDrawing = true;
-			});
+    <!-- Thickness -->
+    <label for="lineThickness">Line Thickness:</label>
+    <input type="range" id="lineThickness" min="1" max="40" value="5" />
+    <span class="value" id="thicknessValue">5</span>
+  </div>
 
-			// handle touchmove events
-			canvas.addEventListener("touchmove", function(e) {
-				e.preventDefault(); // prevent scrolling
-			    	if (isDrawing) {
-			      	// draw a line from the last position to the current position
-			      		ctx.beginPath();
-			      		ctx.moveTo(lastX, lastY);
-			      		ctx.lineTo(e.touches[0].clientX - canvas.offsetLeft, e.touches[0].clientY - canvas.offsetTop);
-			      		ctx.stroke();
-			      		// update the last position of the touch
-			      		lastX = e.touches[0].clientX - canvas.offsetLeft;
-			      		lastY = e.touches[0].clientY - canvas.offsetTop;
-			    	}
-			});
+  <!-- Canvas -->
+  <canvas id="drawing" width="1200" height="1200" tabindex="0"></canvas>
 
-			// handle touchend events
-			canvas.addEventListener("touchend", function(e) {
-			    	isDrawing = false;
-			});
+  <script>
+    // --- Elements ---
+    const canvas = document.getElementById("drawing");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("color");
+    const lineThicknessSlider = document.getElementById("lineThickness");
+    const thicknessValue = document.getElementById("thicknessValue");
+    const toggleButton = document.getElementById("toggleButton");
+    const genDisplay = document.getElementById("genDisplay");
 
-			// handle mousedown events
-			canvas.addEventListener("mousedown", function(e) {
-				lastX = e.offsetX;
-			    	lastY = e.offsetY;
-			    	isDrawing = true;
-			});
+    // --- Canvas drawing style ---
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = parseFloat(lineThicknessSlider.value);
+    ctx.lineJoin = "round";
+    ctx.lineCap  = "round";
 
-			// handle mousemove events
-			canvas.addEventListener("mousemove", function(e) {
-				if (isDrawing) {
-			     		// draw a line from the last position to the current position
-			      		ctx.beginPath();
-			      		ctx.moveTo(lastX, lastY);
-			      		ctx.lineTo(e.offsetX, e.offsetY);
-			      		ctx.stroke();
-			      		// update the last position of the mouse
-			      		lastX = e.offsetX;
-			      		lastY = e.offsetY;
-			    	}
-			});
+    // Show initial thickness number
+    thicknessValue.textContent = lineThicknessSlider.value;
 
-			// handle mouseup events
-			canvas.addEventListener("mouseup", function(e) {
-			    	isDrawing = false;
-			});
+    // --- Helpers ---
+    function getCanvasPos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (evt.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (evt.clientY - rect.top)  * (canvas.height / rect.height);
+      return { x, y };
+    }
 
-			// Handle color picker change events
-    			colorPicker.addEventListener("change", function(e) {
-      				ctx.strokeStyle = e.target.value;
-    			});
+    // --- Pointer drawing (mouse + touch unified) ---
+    let isDrawing = false;
+    let last = { x: 0, y: 0 };
 
-			// Handle line thickness slider change events
-    			lineThicknessSlider.addEventListener("input", function(e) {
-      				ctx.lineWidth = e.target.value;
-    			});
+    canvas.addEventListener("pointerdown", (e) => {
+      // For touch, stop page from scrolling
+      if (e.pointerType === "touch") e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+      last = getCanvasPos(e);
+    }, { passive: false });
 
-			// Handle color picker change events
-    			function dismissColorPicker() {
-      				ctx.strokeStyle = colorPicker.value;
-      				colorPicker.blur(); // Dismiss the color picker
-    			}
-	  	</script>
-	</body>
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDrawing) return;
+      if (e.pointerType === "touch") e.preventDefault();
+      const pos = getCanvasPos(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      last = pos;
+    }, { passive: false });
+
+    function endStroke(e) {
+      if (isDrawing) {
+        isDrawing = false;
+        if (e && e.pointerId) {
+          try { canvas.releasePointerCapture(e.pointerId); } catch(_) {}
+        }
+      }
+    }
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+    canvas.addEventListener("pointerleave", endStroke);
+
+    // --- Color picker: update + dismiss ---
+    // Use `input` for live update; blur + focus canvas to close pickers consistently.
+    colorPicker.addEventListener("input", (e) => {
+      ctx.strokeStyle = e.target.value;
+    });
+
+    colorPicker.addEventListener("change", () => {
+      // Try to dismiss native picker and return focus to canvas
+      colorPicker.blur();
+      canvas.focus();
+    });
+
+    // Some browsers (and user flows) benefit from explicit call:
+    function dismissColorPicker() {
+      ctx.strokeStyle = colorPicker.value;
+      colorPicker.blur();
+      canvas.focus();
+    }
+    // If you still call onchange="dismissColorPicker()" in HTML, it will work.
+
+    // --- Line thickness slider ---
+    lineThicknessSlider.addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      ctx.lineWidth = v;
+      thicknessValue.textContent = v;
+    });
+
+    // --- Toggle text visibility (use visibility per your request) ---
+    // When hidden: button text becomes "Show my thing!"
+    function toggleTextVisibility() {
+      const hidden = genDisplay.style.visibility === "hidden";
+      if (hidden) {
+        genDisplay.style.visibility = "visible";
+        toggleButton.textContent = "Hide text";
+      } else {
+        genDisplay.style.visibility = "hidden";
+        toggleButton.textContent = "Show my thing!";
+      }
+    }
+    // Expose for inline onclick
+    window.toggleTextVisibility = toggleTextVisibility;
+
+    // Optional: resize canvas visually but keep resolution (not required)
+    // function fitCanvasToParent() {
+    //   const maxW = Math.min(window.innerWidth - 32, 1200);
+    //   canvas.style.width = maxW + "px";
+    //   canvas.style.height = "auto";
+    // }
+    // window.addEventListener("resize", fitCanvasToParent);
+    // fitCanvasToParent();
+  </script>
+</body>
 </html>
-
