@@ -9,16 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg: #0f1320;
-      --panel: #151a2c;
-      --panel-2: #1a2035;
-      --text: #e9ecf1;
-      --muted: #a7b0c3;
-      --brand: #6aa7ff;
-      --brand-2:#4f86ea;
-      --ring: 0 0 0 3px rgba(106,167,255,.35);
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --bg: #0f1320; --panel: #151a2c; --panel-2: #1a2035; --text: #e9ecf1; --muted: #a7b0c3;
+      --brand: #6aa7ff; --brand-2:#4f86ea; --ring: 0 0 0 3px rgba(106,167,255,.35);
+      --radius: 14px; --shadow: 0 10px 30px rgba(0,0,0,.35);
       --border: 1px solid rgba(255,255,255,.08);
     }
     @media (prefers-color-scheme: light){
@@ -40,7 +33,6 @@
       line-height:1.5;
     }
 
-    /* Header */
     .site-header{
       position: sticky; top:0; z-index:20;
       padding:18px 20px; backdrop-filter: blur(6px);
@@ -59,7 +51,6 @@
     }
     .hint{ color: var(--muted); font-size: 12px; }
 
-    /* Single-column layout (output/tools above canvas) */
     .wrap{
       max-width: 1100px; margin: 18px auto; padding: 0 20px; display: grid; gap: 16px;
       grid-template-columns: 1fr;
@@ -72,10 +63,17 @@
       box-shadow: var(--shadow);
     }
 
-    /* Controls & Output (top box) */
+    /* Top: actions + output + controls */
     .top-box{ padding:16px; display:flex; flex-direction:column; gap:12px; }
 
-    .toolbar{
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    #genDisplay{
+      font-size: 15px; color: var(--text);
+      border-radius:12px; background: color-mix(in oklab, var(--panel) 75%, transparent);
+      border: var(--border); padding: 12px 14px;
+    }
+
+    .controls{
       display:flex; align-items:center; flex-wrap:wrap; gap:12px;
     }
     .group{
@@ -86,14 +84,7 @@
     label{ color: var(--muted); font-size:13px; }
     .value{ min-width: 2ch; text-align:right; font-variant: tabular-nums; }
 
-    .thingamen-actions{ display:flex; gap:10px; flex-wrap:wrap; }
-    #genDisplay{
-      font-size: 15px; color: var(--text);
-      border-radius:12px; background: color-mix(in oklab, var(--panel) 75%, transparent);
-      border: var(--border); padding: 12px 14px;
-    }
-
-    /* Canvas card */
+    /* Canvas */
     .canvas-card{ padding:16px; display:flex; flex-direction:column; gap:12px; }
     .canvas-shell{
       border-radius: calc(var(--radius) - 6px);
@@ -120,6 +111,7 @@
       transition: transform .06s ease, box-shadow .2s ease;
     }
     .button.secondary{ background:none; color:var(--text); border: var(--border); box-shadow:none; }
+    .button.danger{ background: linear-gradient(135deg, #ef4444, #dc2626); }
     .button:active{ transform: translateY(1px); }
     .button:focus-visible{ outline:none; box-shadow: var(--ring); }
 
@@ -148,7 +140,6 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
   <header class="site-header">
     <div class="header-inner">
       <div class="brand">
@@ -159,12 +150,19 @@
     </div>
   </header>
 
-  <!-- Main (single column: tools/output above canvas) -->
   <main class="wrap">
-
-    <!-- Top: Drawing tools + Output box (no title label) -->
+    <!-- Top: actions + output + (moved) controls -->
     <section class="panel top-box">
-      <div class="toolbar">
+      <div class="actions">
+        <button class="button" id="genBtn" onclick="genathingFn()">Generate my thing!</button>
+        <button class="button secondary" id="toggleButton" onclick="toggleTextVisibility()">Hide text</button>
+        <button class="button danger" id="clearBtn">Clear canvas</button>
+      </div>
+
+      <div id="genDisplay">Your Thingamagen will appear here.</div>
+
+      <!-- Controls moved below generated text -->
+      <div class="controls">
         <div class="group">
           <label for="color">Color</label>
           <input type="color" id="color" value="#000000" />
@@ -175,13 +173,6 @@
           <span class="value" id="thicknessValue">5</span>
         </div>
       </div>
-
-      <div class="thingamen-actions">
-        <button class="button" id="genBtn" onclick="genathingFn()">Generate my thing!</button>
-        <button class="button secondary" id="toggleButton" onclick="toggleTextVisibility()">Hide text</button>
-      </div>
-
-      <div id="genDisplay">Your Thingamagen will appear here.</div>
     </section>
 
     <!-- Canvas -->
@@ -190,7 +181,6 @@
         <canvas id="drawing" width="1600" height="1600" tabindex="0"></canvas>
       </div>
     </section>
-
   </main>
 
   <script>
@@ -202,6 +192,7 @@
     const thicknessValue = document.getElementById("thicknessValue");
     const toggleButton = document.getElementById("toggleButton");
     const genDisplay = document.getElementById("genDisplay");
+    const clearBtn = document.getElementById("clearBtn");
 
     // --- Initial drawing styles ---
     ctx.strokeStyle = colorPicker.value;
@@ -279,6 +270,12 @@
       }
     }
     window.toggleTextVisibility = toggleTextVisibility;
+
+    // --- Clear canvas ---
+    function clearCanvas(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    clearBtn.addEventListener("click", clearCanvas);
   </script>
 </body>
 </html>
