@@ -16,6 +16,344 @@
       --muted: #a7b0c3;
       --brand: #6aa7ff;
       --brand-2:#4f86ea;
+      --ring: 0 0 0 3px rgba(106,167,255,.35);
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --border: 1px solid rgba(255,255,255,.08);
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --panel:#ffffff;
+        --panel-2:#f1f4fb;
+        --text:#101828;
+        --muted:#667085;
+        --brand:#3164ff;
+        --brand-2:#1846cf;
+        --ring: 0 0 0 3px rgba(49,100,255,.18);
+        --border: 1px solid rgba(16,24,40,.08);
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 10% -10%, rgba(106,167,255,.15), transparent 60%),
+                  radial-gradient(800px 600px at 90% -20%, rgba(79,134,234,.15), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      line-height:1.5;
+    }
+
+    /* Header */
+    .site-header{
+      position: sticky; top:0; z-index:20;
+      padding:18px 20px;
+      backdrop-filter: blur(6px);
+      background: color-mix(in oklab, var(--bg) 90%, transparent);
+      border-bottom: var(--border);
+    }
+    .header-inner{
+      max-width: 1200px; margin:0 auto;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:.2px;
+    }
+    .logo{
+      width:36px; height:36px; border-radius:10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 6px 18px rgba(79,134,234,.45);
+    }
+
+    /* Layout as CSS Grid with areas so we can reorder on mobile */
+    .wrap{
+      max-width: 1200px; margin: 18px auto; padding: 0 20px;
+      display:grid; gap:18px;
+      grid-template-columns: 1.35fr .75fr;
+      grid-template-areas: "canvas side";
+    }
+    @media (max-width: 980px){
+      .wrap{
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "side"
+          "canvas"; /* side (Thingamen) above canvas on mobile */
+      }
+    }
+
+    .panel{
+      background: var(--panel);
+      border: var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    /* Canvas / left */
+    .canvas-card{ grid-area: canvas; padding:16px; display:flex; flex-direction:column; gap:12px; }
+    .canvas-shell{
+      border-radius: calc(var(--radius) - 6px);
+      background: var(--panel-2);
+      border: var(--border);
+      overflow: hidden;
+    }
+    #drawing{
+      display:block; width:100%; height:min(68vh, 760px);
+      touch-action: none;
+      image-rendering: optimizeQuality;
+      background:
+        linear-gradient(transparent 39px, rgba(255,255,255,.05) 40px, transparent 41px),
+        linear-gradient(90deg, transparent 39px, rgba(255,255,255,.05) 40px, transparent 41px),
+        repeating-linear-gradient(0deg, transparent 0, transparent 9px, rgba(255,255,255,.04) 10px);
+      background-color: color-mix(in oklab, var(--panel-2) 92%, #ffffff 8%);
+      border: none;
+    }
+
+    /* Side / right */
+    .side{ grid-area: side; display:flex; flex-direction:column; gap:16px; }
+    .card{ padding:16px; }
+
+    /* Thingamen (output) card layout */
+    .thingamen-header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px;
+    }
+    .thingamen-actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+
+    /* Gen display */
+    #genDisplay{
+      font-size: 15px;
+      color: var(--text);
+      border-radius: calc(var(--radius) - 6px);
+      background: color-mix(in oklab, var(--panel) 75%, transparent);
+      border: var(--border);
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    /* Toolbar below header, for drawing controls only */
+    .toolbar{
+      display:flex; align-items:center; flex-wrap:wrap; gap:12px;
+    }
+    .toolbar .group{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px; border-radius:12px; background: color-mix(in oklab, var(--panel) 80%, transparent);
+      border: var(--border);
+    }
+    label{ color: var(--muted); font-size:13px; }
+    .value{ min-width: 2ch; text-align: right; font-variant: tabular-nums; }
+
+    /* Inputs & Buttons */
+    .button{
+      appearance: none; border: none; cursor: pointer;
+      color: white; font-weight: 600; letter-spacing:.2px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      padding: 10px 14px; border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(79,134,234,.35);
+      transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+    }
+    .button.secondary{
+      background: none; color: var(--text);
+      border: var(--border); box-shadow: none;
+    }
+    .button:active{ transform: translateY(1px) }
+    .button:focus-visible{ outline: none; box-shadow: var(--ring); }
+
+    input[type="color"]{
+      width: 40px; height: 40px; padding:0; border-radius:10px; border: var(--border);
+      background: var(--panel-2); cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+    }
+    input[type="color"]::-webkit-color-swatch{ border:none; border-radius:8px; }
+    input[type="color"]::-webkit-color-swatch-wrapper{ padding:4px; border-radius:10px; }
+
+    input[type="range"]{ width: 180px; height: 32px; background: transparent; }
+    input[type="range"]::-webkit-slider-runnable-track{
+      height: 6px; border-radius: 999px;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance:none; width: 18px; height:18px; border-radius:50%;
+      background: #fff; border: 2px solid var(--brand-2); margin-top: -6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    }
+    /* Firefox */
+    input[type="range"]::-moz-range-track{
+      height: 6px; border-radius:999px; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid var(--brand-2);
+      box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    }
+    .hint{ color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>Thingamagen</div>
+      </div>
+      <div class="hint">Draw, tweak, and generate—nicely.</div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="wrap">
+    <!-- Left: Canvas (drawing area) -->
+    <section class="panel canvas-card">
+      <div class="toolbar">
+        <div class="group">
+          <label for="color">Color</label>
+          <input type="color" id="color" value="#000000" />
+        </div>
+
+        <div class="group">
+          <label for="lineThickness">Thickness</label>
+          <input type="range" id="lineThickness" min="1" max="40" value="5" />
+          <span class="value" id="thicknessValue">5</span>
+        </div>
+      </div>
+
+      <div class="canvas-shell">
+        <canvas id="drawing" width="1600" height="1600" tabindex="0"></canvas>
+      </div>
+      <div class="hint">Tip: On mobile, the Thingamen box is above; the canvas blocks panning to improve drawing accuracy.</div>
+    </section>
+
+    <!-- Right: Thingamen (Output) -->
+    <aside class="side">
+      <section class="panel card">
+        <div class="thingamen-header">
+          <h3 style="margin:0;">Thingamen</h3>
+          <div class="thingamen-actions">
+            <button class="button" id="genBtn" onclick="genathingFn()">Generate my thing!</button>
+            <button class="button secondary" id="toggleButton" onclick="toggleTextVisibility()">Hide text</button>
+          </div>
+        </div>
+        <div id="genDisplay">Your Thingamagen will appear here.</div>
+      </section>
+
+      <section class="panel card">
+        <h3 style="margin:0 0 10px 0;">About</h3>
+        <p class="hint" style="margin:0;">
+          Professional UI, responsive layout, and unified pointer-based drawing. Works on desktop & mobile.
+        </p>
+      </section>
+    </aside>
+  </main>
+
+  <script>
+    // --- Elements ---
+    const canvas = document.getElementById("drawing");
+    const ctx = canvas.getContext("2d");
+    const colorPicker = document.getElementById("color");
+    const lineThicknessSlider = document.getElementById("lineThickness");
+    const thicknessValue = document.getElementById("thicknessValue");
+    const toggleButton = document.getElementById("toggleButton");
+    const genDisplay = document.getElementById("genDisplay");
+
+    // --- Initial drawing styles ---
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = parseFloat(lineThicknessSlider.value);
+    ctx.lineJoin = "round";
+    ctx.lineCap  = "round";
+    thicknessValue.textContent = lineThicknessSlider.value;
+
+    // --- Coordinate helper (handles CSS scaling) ---
+    function getCanvasPos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const x = (evt.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (evt.clientY - rect.top)  * (canvas.height / rect.height);
+      return { x, y };
+    }
+
+    // --- Pointer-based drawing (mouse + touch unified) ---
+    let isDrawing = false;
+    let last = { x: 0, y: 0 };
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+      last = getCanvasPos(e);
+    }, { passive: false });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDrawing) return;
+      if (e.pointerType === "touch") e.preventDefault();
+      const pos = getCanvasPos(e);
+      ctx.beginPath();
+      ctx.moveTo(last.x, last.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      last = pos;
+    }, { passive: false });
+
+    function endStroke(e){
+      if (!isDrawing) return;
+      isDrawing = false;
+      if (e?.pointerId){
+        try { canvas.releasePointerCapture(e.pointerId); } catch(_) {}
+      }
+    }
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+    canvas.addEventListener("pointerleave", endStroke);
+
+    // --- Color picker: live update + dismiss after choose ---
+    colorPicker.addEventListener("input", (e) => {
+      ctx.strokeStyle = e.target.value;
+    });
+    colorPicker.addEventListener("change", () => {
+      colorPicker.blur();
+      canvas.focus();
+    });
+
+    // --- Thickness slider ---
+    lineThicknessSlider.addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      ctx.lineWidth = v;
+      thicknessValue.textContent = v;
+    });
+
+    // --- Toggle genDisplay visibility; update button label as requested ---
+    function toggleTextVisibility() {
+      const hidden = genDisplay.style.visibility === "hidden";
+      if (hidden) {
+        genDisplay.style.visibility = "visible";
+        toggleButton.textContent = "Hide text";
+      } else {
+        genDisplay.style.visibility = "hidden";
+        toggleButton.textContent = "Show my thing!";
+      }
+    }
+    window.toggleTextVisibility = toggleTextVisibility;
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thingamagen</title>
+  <script src="./genathing.js" defer></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0f1320;
+      --panel: #151a2c;
+      --panel-2: #1a2035;
+      --text: #e9ecf1;
+      --muted: #a7b0c3;
+      --brand: #6aa7ff;
+      --brand-2:#4f86ea;
       --ok: #22c55e;
       --danger:#ef4444;
       --ring: 0 0 0 3px rgba(106,167,255,.35);
