@@ -9,25 +9,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg: #0f1320; --panel: #151a2c; --panel-2: #1a2035; --text: #e9ecf1; --muted: #a7b0c3;
-      --brand: #6aa7ff; --brand-2:#4f86ea; --ring: 0 0 0 3px rgba(106,167,255,.35);
-      --radius: 14px; --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --border: 1px solid rgba(255,255,255,.08);
+      --bg: #0f1320; --panel: #151a2c; --panel-2:#1a2035; --text:#e9ecf1; --muted:#a7b0c3;
+      --brand:#6aa7ff; --brand-2:#4f86ea; --ring:0 0 0 3px rgba(106,167,255,.35);
+      --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.35);
+      --border:1px solid rgba(255,255,255,.08);
     }
     @media (prefers-color-scheme: light){
       :root{
         --bg:#f6f7fb; --panel:#ffffff; --panel-2:#f1f4fb; --text:#101828; --muted:#667085;
-        --brand:#3164ff; --brand-2:#1846cf; --ring: 0 0 0 3px rgba(49,100,255,.18);
-        --border: 1px solid rgba(16,24,40,.08);
+        --brand:#3164ff; --brand-2:#1846cf; --ring:0 0 0 3px rgba(49,100,255,.18);
+        --border:1px solid rgba(16,24,40,.08);
       }
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      background: radial-gradient(1200px 700px at 10% -10%, rgba(106,167,255,.15), transparent 60%),
-                  radial-gradient(800px 600px at 90% -20%, rgba(79,134,234,.15), transparent 60%),
-                  var(--bg);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, rgba(106,167,255,.15), transparent 60%),
+        radial-gradient(800px 600px at 90% -20%, rgba(79,134,234,.15), transparent 60%),
+        var(--bg);
       color:var(--text);
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       line-height:1.5;
@@ -52,8 +53,8 @@
     .hint{ color: var(--muted); font-size: 12px; }
 
     .wrap{
-      max-width: 1100px; margin: 18px auto; padding: 0 20px; display: grid; gap: 16px;
-      grid-template-columns: 1fr;
+      max-width: 1100px; margin: 18px auto; padding: 0 20px;
+      display: grid; gap: 16px; grid-template-columns: 1fr;
     }
 
     .panel{
@@ -65,20 +66,17 @@
 
     /* Top: actions + output + controls */
     .top-box{ padding:16px; display:flex; flex-direction:column; gap:12px; }
-
     .actions{ display:flex; gap:10px; flex-wrap:wrap; }
     #genDisplay{
       font-size: 15px; color: var(--text);
       border-radius:12px; background: color-mix(in oklab, var(--panel) 75%, transparent);
       border: var(--border); padding: 12px 14px;
     }
-
-    .controls{
-      display:flex; align-items:center; flex-wrap:wrap; gap:12px;
-    }
+    .controls{ display:flex; align-items:center; flex-wrap:wrap; gap:12px; }
     .group{
       display:flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:12px; background: color-mix(in oklab, var(--panel) 80%, transparent);
+      padding:10px 12px; border-radius:12px;
+      background: color-mix(in oklab, var(--panel) 80%, transparent);
       border: var(--border);
     }
     label{ color: var(--muted); font-size:13px; }
@@ -112,6 +110,7 @@
     }
     .button.secondary{ background:none; color:var(--text); border: var(--border); box-shadow:none; }
     .button.danger{ background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .button.success{ background: linear-gradient(135deg, #22c55e, #16a34a); }
     .button:active{ transform: translateY(1px); }
     .button:focus-visible{ outline:none; box-shadow: var(--ring); }
 
@@ -151,17 +150,21 @@
   </header>
 
   <main class="wrap">
-    <!-- Top: actions + output + (moved) controls -->
+    <!-- Top: actions + output + controls -->
     <section class="panel top-box">
       <div class="actions">
         <button class="button" id="genBtn" onclick="genathingFn()">Generate my thing!</button>
         <button class="button secondary" id="toggleButton" onclick="toggleTextVisibility()">Hide text</button>
         <button class="button danger" id="clearBtn">Clear canvas</button>
+
+        <!-- New share/download buttons -->
+        <button class="button success" id="downloadBtn" title="Download PNG">Download image</button>
+        <button class="button secondary" id="shareIgBtn" title="Share to Instagram">Share to Instagram</button>
+        <button class="button secondary" id="shareFbBtn" title="Share to Facebook">Share to Facebook</button>
       </div>
 
       <div id="genDisplay">Your Thingamagen will appear here.</div>
 
-      <!-- Controls moved below generated text -->
       <div class="controls">
         <div class="group">
           <label for="color">Color</label>
@@ -193,6 +196,9 @@
     const toggleButton = document.getElementById("toggleButton");
     const genDisplay = document.getElementById("genDisplay");
     const clearBtn = document.getElementById("clearBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const shareIgBtn = document.getElementById("shareIgBtn");
+    const shareFbBtn = document.getElementById("shareFbBtn");
 
     // --- Initial drawing styles ---
     ctx.strokeStyle = colorPicker.value;
@@ -242,16 +248,9 @@
     canvas.addEventListener("pointercancel", endStroke);
     canvas.addEventListener("pointerleave", endStroke);
 
-    // --- Color picker: live update + dismiss after choose ---
-    colorPicker.addEventListener("input", (e) => {
-      ctx.strokeStyle = e.target.value;
-    });
-    colorPicker.addEventListener("change", () => {
-      colorPicker.blur();
-      canvas.focus();
-    });
-
-    // --- Thickness slider ---
+    // --- Color picker + thickness ---
+    colorPicker.addEventListener("input", (e) => { ctx.strokeStyle = e.target.value; });
+    colorPicker.addEventListener("change", () => { colorPicker.blur(); canvas.focus(); });
     lineThicknessSlider.addEventListener("input", (e) => {
       const v = parseFloat(e.target.value);
       ctx.lineWidth = v;
@@ -261,21 +260,62 @@
     // --- Toggle output text visibility; update button label ---
     function toggleTextVisibility() {
       const hidden = genDisplay.style.visibility === "hidden";
-      if (hidden) {
-        genDisplay.style.visibility = "visible";
-        toggleButton.textContent = "Hide text";
-      } else {
-        genDisplay.style.visibility = "hidden";
-        toggleButton.textContent = "Show my thing!";
-      }
+      if (hidden) { genDisplay.style.visibility = "visible"; toggleButton.textContent = "Hide text"; }
+      else { genDisplay.style.visibility = "hidden"; toggleButton.textContent = "Show my thing!"; }
     }
     window.toggleTextVisibility = toggleTextVisibility;
+
+    // --- Utilities: blob/file + download + share ---
+    function canvasToBlob() {
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), "image/png", 1.0);
+      });
+    }
+
+    async function downloadCanvas() {
+      const blob = await canvasToBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "thingamagen.png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    async function shareCanvas(targetApp = "") {
+      const blob = await canvasToBlob();
+      const file = new File([blob], "thingamagen.png", { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: "My Thingamagen",
+            text: targetApp ? `Shared to ${targetApp}` : "Made with Thingamagen ✨"
+          });
+        } catch (err) {
+          // User canceled or share failed
+          console.warn("Share canceled/failed:", err);
+        }
+      } else {
+        // Fallback: download, then user can upload to Instagram/Facebook manually
+        await downloadCanvas();
+        alert("Sharing isn't supported in this browser. The image has been downloaded—upload it to Instagram or Facebook from your device.");
+      }
+    }
 
     // --- Clear canvas ---
     function clearCanvas(){
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
+
+    // --- Bind buttons ---
     clearBtn.addEventListener("click", clearCanvas);
+    downloadBtn.addEventListener("click", downloadCanvas);
+    shareIgBtn.addEventListener("click", () => shareCanvas("Instagram"));
+    shareFbBtn.addEventListener("click", () => shareCanvas("Facebook"));
   </script>
 </body>
 </html>
