@@ -121,20 +121,68 @@
     input[type="color"]::-webkit-color-swatch{ border:none; border-radius:8px; }
     input[type="color"]::-webkit-color-swatch-wrapper{ padding:4px; border-radius:10px; }
 
-    input[type="range"]{ width: 180px; height:32px; background:transparent; }
-    input[type="range"]::-webkit-slider-runnable-track{
-      height:6px; border-radius:999px; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    /* Black fill on the right side of the slider */
+    input[type="range"] {
+      width: 180px;
+      height: 32px;
+      background: transparent;
+      position: relative;
     }
-    input[type="range"]::-webkit-slider-thumb{
-      -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
-      background:#fff; border:2px solid var(--brand-2); margin-top:-6px; box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--brand) 0%,
+        var(--brand) var(--slider-fill, 50%),
+        #000 var(--slider-fill, 50%),
+        #000 100%
+      );
     }
-    input[type="range"]::-moz-range-track{
-      height:6px; border-radius:999px; background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    
+    input[type="range"]::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: #000;
+    }
+    
+    input[type="range"]::-moz-range-progress {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--brand);
     }
     input[type="range"]::-moz-range-thumb{
       width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid var(--brand-2);
       box-shadow: 0 3px 8px rgba(0,0,0,.25);
+    }
+    /* --- Social icon buttons --- */
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    
+    .icon-button svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+    
+    /* Instagram gradient */
+    .button.instagram {
+      background: radial-gradient(circle at 30% 107%, 
+        #fdf497 0%, #fdf497 5%, #fd5949 45%, 
+        #d6249f 60%, #285AEB 90%);
+    }
+    
+    /* Facebook blue */
+    .button.facebook {
+      background: #1877f2;
     }
   </style>
 </head>
@@ -159,8 +207,19 @@
 
         <!-- New share/download buttons -->
         <button class="button success" id="downloadBtn" title="Download PNG">Download image</button>
-        <button class="button secondary" id="shareIgBtn" title="Share to Instagram">Share to Instagram</button>
-        <button class="button secondary" id="shareFbBtn" title="Share to Facebook">Share to Facebook</button>
+        <button class="button icon-button instagram" id="shareIgBtn" title="Share to Instagram">
+          <!-- Instagram icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7.75 2H16.25C19.425 2 22 4.575 22 7.75V16.25C22 19.425 19.425 22 16.25 22H7.75C4.575 22 2 19.425 2 16.25V7.75C2 4.575 4.575 2 7.75 2ZM12 7C9.239 7 7 9.239 7 12C7 14.761 9.239 17 12 17C14.761 17 17 14.761 17 12C17 9.239 14.761 7 12 7ZM18 6.5C18 7.328 17.328 8 16.5 8C15.672 8 15 7.328 15 6.5C15 5.672 15.672 5 16.5 5C17.328 5 18 5.672 18 6.5Z"/>
+          </svg>
+        </button>
+      
+        <button class="button icon-button facebook" id="shareFbBtn" title="Share to Facebook">
+          <!-- Facebook icon -->
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M22 12.07C22 6.477 17.523 2 11.93 2C6.338 2 1.86 6.477 1.86 12.07C1.86 17.08 5.523 21.21 10.29 22V14.89H7.69V12.07H10.29V9.92C10.29 7.35 11.82 5.93 14.16 5.93C15.28 5.93 16.46 6.13 16.46 6.13V8.65H15.17C13.9 8.65 13.51 9.43 13.51 10.23V12.07H16.34L15.89 14.89H13.51V22C18.28 21.21 22 17.08 22 12.07Z"/>
+          </svg>
+        </button>
       </div>
 
       <div id="genDisplay">Your Thingamagen will appear here.</div>
@@ -255,6 +314,22 @@
       const v = parseFloat(e.target.value);
       ctx.lineWidth = v;
       thicknessValue.textContent = v;
+    });
+    
+    function updateSliderFill() {
+      const min = parseFloat(lineThicknessSlider.min);
+      const max = parseFloat(lineThicknessSlider.max);
+      const val = parseFloat(lineThicknessSlider.value);
+      const percent = ((val - min) / (max - min)) * 100;
+      lineThicknessSlider.style.setProperty('--slider-fill', `${percent}%`);
+    }
+    
+    // Run on load
+    updateSliderFill();
+    
+    // Update on input
+    lineThicknessSlider.addEventListener("input", () => {
+      updateSliderFill();
     });
 
     // --- Toggle output text visibility; update button label ---
