@@ -90,19 +90,15 @@
       border: var(--border); overflow: hidden;
     }
     #drawing{
-      display:block;
-      width: 100%;
-      max-width: 600px;
-      aspect-ratio: 1 / 1;  /* ✅ Forces square shape */
-      touch-action: none;
-      image-rendering: pixelated;
+      display:block; width:100%; height:min(68vh, 760px);
+      touch-action: none; image-rendering: optimizeQuality;
       background:
         linear-gradient(transparent 39px, rgba(255,255,255,.05) 40px, transparent 41px),
         linear-gradient(90deg, transparent 39px, rgba(255,255,255,.05) 40px, transparent 41px),
         repeating-linear-gradient(0deg, transparent 0, transparent 9px, rgba(255,255,255,.04) 10px);
       background-color: color-mix(in oklab, var(--panel-2) 92%, #ffffff 8%);
+      border: none;
     }
-
 
     /* Buttons & inputs */
     .button{
@@ -185,7 +181,7 @@
     <!-- Canvas -->
     <section class="panel canvas-card">
       <div class="canvas-shell">
-        <canvas id="drawing" tabindex="0"></canvas>
+        <canvas id="drawing" width="1600" height="1600" tabindex="0"></canvas>
       </div>
     </section>
   </main>
@@ -214,37 +210,10 @@
     // --- Coordinate helper (handles CSS scaling) ---
     function getCanvasPos(evt) {
       const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-    
-      return {
-        x: (evt.clientX - rect.left) * scaleX,
-        y: (evt.clientY - rect.top) * scaleY
-      };
+      const x = (evt.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (evt.clientY - rect.top)  * (canvas.height / rect.height);
+      return { x, y };
     }
-    
-    function resizeCanvasToSquare() {
-      const rect = canvas.getBoundingClientRect();
-      const size = Math.min(rect.width, rect.height);
-      const dpr = window.devicePixelRatio || 1;
-    
-      canvas.width = Math.floor(size * dpr);
-      canvas.height = Math.floor(size * dpr);
-    
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    
-      // Keep drawing settings
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.strokeStyle = colorPicker.value;
-      ctx.lineWidth = parseFloat(lineThicknessSlider.value);
-    }
-    
-    // Run once on load
-    resizeCanvasToSquare();
-    
-    // Keep it square if the window resizes
-    window.addEventListener("resize", resizeCanvasToSquare);
 
     // --- Pointer-based drawing (mouse + touch unified) ---
     let isDrawing = false;
